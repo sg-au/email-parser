@@ -13,7 +13,7 @@ globalThis.Headers = Headers;
 // IMAP reconnection settings
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY = 10000; // 10 seconds
-const CHECK_INTERVAL = 60000; // 60 seconds
+const CHECK_INTERVAL = 10000; // 60 seconds
 let imapReconnectAttempts = 0;
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -202,7 +202,7 @@ function checkEmails() {
       struct: true
     });
 
-    const emails = [];
+    let emails = [];
     let partsProcessed = 0;
     let totalParts = 2;
 
@@ -252,9 +252,10 @@ function checkEmails() {
                 emailData.body = parsed.text;
               }
               partsProcessed++;
-              
+              console.log(partsProcessed, totalParts);
               if (partsProcessed === totalParts) {
                 if (emailData.fromEmail && emailData.body && emailData.threadId) {
+                  console.log(`Email data for message #${seqno}:`, emailData);
                   emails.push(emailData);
                 } else {
                   console.log('Missing required email data for message #' + seqno);
@@ -276,6 +277,7 @@ function checkEmails() {
 
     fetch.once('end', async () => {
       console.log('Done fetching all messages');
+      console.log(emails);
       
       if (emails.length > 0) {
         console.log(`Processing ${emails.length} valid emails`);

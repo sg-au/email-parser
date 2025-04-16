@@ -3,6 +3,7 @@ const { simpleParser } = require("mailparser");
 const dotenv = require("dotenv");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const moment = require("moment");
+const moment = require("moment-timezone");
 const { google } = require("googleapis");
 dotenv.config();
 
@@ -457,22 +458,26 @@ async function sendToGoogleCalendar(eventObject, threadId, fromEmail) {
     const endTimeStr = timeParts.length > 1 ? timeParts[1] : null;
 
     // Parse date using moment
-    const parsedDate = moment(eventDate);
+    const parsedDate = moment.tz(eventDate, "Asia/Kolkata");
     if (!parsedDate.isValid()) {
       console.error(`Invalid date: ${eventDate}, using current date`);
-      parsedDate = moment();
+      parsedDate = moment.tz("Asia/Kolkata");
     }
 
     // Parse start time correctly - DON'T concatenate strings
     // Use the moment object's methods instead
-    const startTime = moment(startTimeStr, ["h:mm A", "h:mm a"]);
+    const startTime = moment.tz(
+      startTimeStr,
+      ["h:mm A", "h:mm a"],
+      "Asia/Kolkata"
+    );
     if (!startTime.isValid()) {
       console.error(`Invalid start time: ${startTimeStr}, using current time`);
-      startTime = moment();
+      startTime = moment.tz("Asia/Kolkata");
     }
 
     // Create a proper datetime by setting hour and minute on the date
-    const startDateTime = moment(parsedDate).set({
+    const startDateTime = moment.tz(parsedDate, "Asia/Kolkata").set({
       hour: startTime.hour(),
       minute: startTime.minute(),
       second: 0,
@@ -481,9 +486,9 @@ async function sendToGoogleCalendar(eventObject, threadId, fromEmail) {
     // Handle end time similarly
     let endDateTime;
     if (endTimeStr) {
-      const endTime = moment(endTimeStr, ["h:mm A", "h:mm a"]);
+      const endTime = moment.tz(endTimeStr, ["h:mm A", "h:mm a"], "Asia/Kolkata");
       if (endTime.isValid()) {
-        endDateTime = moment(parsedDate).set({
+        endDateTime = moment.tz(parsedDate, "Asia/Kolkata").set({
           hour: endTime.hour(),
           minute: endTime.minute(),
           second: 0,
@@ -492,11 +497,11 @@ async function sendToGoogleCalendar(eventObject, threadId, fromEmail) {
         console.error(
           `Invalid end time: ${endTimeStr}, using start time + 1 hour`
         );
-        endDateTime = moment(startDateTime).add(1, "hour");
+        endDateTime = moment.tz(startDateTime, "Asia/Kolkata").add(1, "hour");
       }
     } else {
       console.log(`No end time provided, using start time + 1 hour`);
-      endDateTime = moment(startDateTime).add(1, "hour");
+      endDateTime = moment.tz(startDateTime, "Asia/Kolkata").add(1, "hour");
     }
 
     // console.log(`Final start time: ${startDateTime.format('YYYY-MM-DD hh:mm A')} (${startDateTime.toISOString()})`);

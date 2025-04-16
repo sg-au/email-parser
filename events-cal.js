@@ -120,7 +120,7 @@ imap.once("ready", function () {
 
 // Open the inbox/label
 function openInbox(cb) {
-  const labelName = "test"; // Change this to your desired label
+  const labelName = process.env.LABEL_LISTENING; // Change this to your desired label
   imap.openBox(labelName, false, cb);
 }
 

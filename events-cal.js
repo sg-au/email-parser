@@ -2,7 +2,7 @@ const Imap = require("imap");
 const { simpleParser } = require("mailparser");
 const dotenv = require("dotenv");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const moment = require("moment");
+// const moment = require("moment");
 const moment = require("moment-timezone");
 const { google } = require("googleapis");
 dotenv.config();

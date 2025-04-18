@@ -6,6 +6,7 @@
     "imap": "^0.8.19",
     "mailparser": "^3.7.2",
     "moment": "^2.30.1",
+    "moment-timezone": "^0.5.48",
     "node-fetch": "^2.7.0"
   }
 }

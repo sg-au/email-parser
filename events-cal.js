@@ -452,6 +452,7 @@ async function sendToGoogleCalendar(eventObject, threadId, fromEmail) {
     // Get date and time values
     const eventDate = eventObject["Date, Time, Venue"].Date;
     const eventTimeStr = eventObject["Date, Time, Venue"].Time;
+    const orgBodies = eventObject["Organising Body"].join(", ") || "";
 
     // Split the time range
     const timeParts = eventTimeStr.split(" - ");
@@ -527,10 +528,12 @@ async function sendToGoogleCalendar(eventObject, threadId, fromEmail) {
         private: {
           emailSource: fromEmail || "",
           threadId: threadId,
+          orgBody: orgBodies ||"",
         },
         shared: {
           emailSource: fromEmail || "",
           threadId: threadId,
+          orgBody: orgBodies || "",
         },
       },
     };

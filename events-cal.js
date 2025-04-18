@@ -14,7 +14,7 @@ globalThis.Headers = Headers;
 // IMAP reconnection settings
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY = 10000; // 10 seconds
-const CHECK_INTERVAL = 10000; // 60 seconds
+const CHECK_INTERVAL = process.env.CHECK_INTERVAL; // 60 seconds
 let imapReconnectAttempts = 0;
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -322,17 +322,18 @@ async function processEvent(emailData) {
                         3. Date, Time, Venue (If this is a word like 'Today' or 'Tomorrow', then use look at the timestamp of the email mentioning
                         this day to calculate the date of the event from the day and replace appropriately. Words should not appear in the JSON object, only proper dates.)
                         4. A concise descriptive summary of the event
-                        Only extract names of organising bodies from the 'From' part provided to you. No other part of the email should be consulted for this. 
+                        Only extract names of organising bodies from the 'From' part provided to you. No other part of the email should be consulted for this.
+                        Also, make sure to read the entire email body to get the context of the event, not just the subject line. Give priority to the details mentioned in the body of the email. 
                         Moreover the descriptive summary should not involve you elaborating on any terms mentioned in the email. Simply summarise the email content. Do not elaborate or use your knowledge to explain the event at all. 
                         Moreover, when figuring out the venue, look out for the entire venue. For example if the event is 'in front of the mess' then the venue is 'in front of the mess', not just 'mess'. 
                         Similarly, if the event is taking place 'in the mess lawns', the venue is 'the mess lawns', not 'lawns'. Be liberal in selecting the venue, it can be a phrase too, not just a location. Also, the time should be in the 12 hour H:MM format with AM/PM.
                         Example of a valid JSON object is: 
                         {
                             "Name of the event": "AI and Ethics Symposium",
-                            "Organising Body": ["Computer Science Department", "Centre for AI Policy"],
+                            "Organising Body": ["Computer Science Department", "Centre for AI Policy"] (If the name of an organizing body is given as a short form, return that short form. For example, if the email mentions 'CSE Department', return 'CSE Department' and not 'Computer Science Department'.),
                             "Date, Time, Venue": {
-                                "Date": "2025-03-15",
-                                "Time": "10:00 AM - 4:00 PM (Note, if only start time is provided, add 1 hour to it for the end time)",
+                                "Date": "2025-03-15" (There can be multi-day events as well. If an event is spanning multiple days, then the date should be in the format YYYY-MM-DD - YYYY-MM-DD. For example, if the event is from 15th March to 17th March, then the date should be "2025-03-15 - 2025-03-17". If the event does not mention that it is multi-day, then it should be a single date in the format YYYY-MM-DD.),
+                                "Time": "10:00 AM - 4:00 PM (Note, if only start time is provided, add 1 hour to it for the end time. The time given in the email may be in the 24 hour or 12 hour format, you need to identify and map it accordingly. If the time is not mentioned, consider it all day.)",
                                 "Venue": "AC-02-LR-011"
                             },
                             "Descriptive Summary": "The AI and Ethics Symposium brings together leading experts, scholars, and students to explore the ethical implications of artificial intelligence. The event includes keynote speeches and poster presentations."

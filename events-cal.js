@@ -18,7 +18,7 @@ const CHECK_INTERVAL = process.env.CHECK_INTERVAL; // 60 seconds
 let imapReconnectAttempts = 0;
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
 // Set up Google Calendar auth
 const oauth2Client = new google.auth.OAuth2(

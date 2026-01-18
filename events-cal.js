@@ -460,7 +460,7 @@ async function sendToGoogleCalendar(eventObject, threadId, fromEmail) {
     const endTimeStr = timeParts.length > 1 ? timeParts[1] : null;
 
     // Parse date using moment
-    const parsedDate = moment.tz(eventDate, "Asia/Kolkata");
+    let parsedDate = moment.tz(eventDate, "Asia/Kolkata");
     if (!parsedDate.isValid()) {
       console.error(`Invalid date: ${eventDate}, using current date`);
       parsedDate = moment.tz("Asia/Kolkata");
@@ -468,7 +468,7 @@ async function sendToGoogleCalendar(eventObject, threadId, fromEmail) {
 
     // Parse start time correctly - DON'T concatenate strings
     // Use the moment object's methods instead
-    const startTime = moment.tz(
+    let startTime = moment.tz(
       startTimeStr,
       ["h:mm A", "h:mm a"],
       "Asia/Kolkata"
